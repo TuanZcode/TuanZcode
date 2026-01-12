@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>❤️ Love ❤️</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:black;font-family:Arial}
+
+/* ===== LOCK ===== */
+.lock{
+    position:fixed;inset:0;
+    display:flex;flex-direction:column;
+    justify-content:center;align-items:center;
+    background:radial-gradient(circle,#300015,#000);
+    color:pink;z-index:999
+}
+.lock h1{font-size:40px;text-shadow:0 0 25px hotpink}
+.lock input{
+    padding:14px 22px;border:none;border-radius:30px;
+    font-size:18px;margin-top:15px
+}
+.lock button{
+    margin-top:15px;padding:12px 40px;
+    border:none;border-radius:30px;
+    background:hotpink;color:white;
+    font-size:18px;cursor:pointer
+}
+.lock p{display:none;margin-top:10px}
+
+/* ===== MAIN ===== */
+.main{display:none}
+
+/* ===== VIDEO ===== */
+.video-bg{
+    position:fixed;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    filter:blur(6px) brightness(.55);
+    z-index:-40
+}
+
+/* ===== HEART BACKGROUND ===== */
+.heart-bg{
+    position:fixed;inset:0;
+    background:
+        radial-gradient(circle,rgba(255,80,150,.15) 0 10px,transparent 11px);
+    background-size:120px 120px;
+    animation:bgMove 25s linear infinite;
+    z-index:-30
+}
+@keyframes bgMove{
+    to{background-position:400px 800px}
+}
+
+/* ===== OVERLAY ===== */
+.overlay{
+    position:fixed;inset:0;
+    background:linear-gradient(45deg,rgba(255,0,150,.35),rgba(0,0,0,.85));
+    z-index:-20
+}
+
+/* ===== HEART CENTER ===== */
+.heart{
+    position:absolute;top:45%;left:50%;
+    width:200px;height:200px;
+    background:#ff2f92;
+    transform:translate(-50%,-50%) rotate(-45deg);
+    animation:beat 1s infinite;
+    box-shadow:0 0 70px hotpink;
+    z-index:20
+}
+.heart:before,.heart:after{
+    content:"";position:absolute;
+    width:200px;height:200px;
+    background:#ff2f92;border-radius:50%
+}
+.heart:before{top:-100px}
+.heart:after{left:100px}
+@keyframes beat{
+    50%{transform:translate(-50%,-50%) rotate(-45deg) scale(1.4)}
+}
+
+/* ===== CENTER IMAGE ===== */
+.heart-img{
+    position:absolute;top:45%;left:50%;
+    width:140px;height:140px;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    border:5px solid white;
+    box-shadow:0 0 30px hotpink;
+    object-fit:cover;
+    z-index:25
+}
+
+/* ===== EXTRA IMAGES ===== */
+.extra{
+    position:absolute;
+    width:90px;height:90px;
+    border-radius:50%;
+    object-fit:cover;
+    box-shadow:0 0 25px hotpink;
+    z-index:15
+}
+
+/* ===== HEART FLY ===== */
+.fly{
+    position:absolute;
+    animation:fly 7s linear forwards;
+    pointer-events:none
+}
+@keyframes fly{
+    to{transform:translateY(-900px);opacity:0}
+}
+
+/* ===== HEART EXPLOSION ===== */
+.explode{
+    position:absolute;
+    font-size:18px;
+    pointer-events:none;
+    animation:explode 1.3s ease-out forwards;
+    z-index:50
+}
+@keyframes explode{
+    to{
+        transform:
+          translate(calc(var(--x)*1px),calc(var(--y)*1px))
+          scale(.3);
+        opacity:0
+    }
+}
+
+/* ===== VIEWER ===== */
+.viewer{
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.9);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:100
+}
+.viewer img{
+    max-width:85%;
+    max-height:85%;
+    border-radius:20px;
+    animation:zoom .3s
+}
+@keyframes zoom{from{transform:scale(.5)}}
+
+/* ===== TEXT ===== */
+.text{
+    position:absolute;bottom:8%;
+    width:100%;text-align:center;
+    font-size:32px;color:pink;
+    text-shadow:0 0 30px hotpink;
+    z-index:30
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOCK -->
+<div class="lock" id="lock">
+    <h1>🔐 Love Password</h1>
+    <input id="pass" type="password" placeholder="Nhập mật khẩu">
+    <button onclick="unlock()">Mở khóa ❤️</button>
+    <p id="err">Sai mật khẩu</p>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="main">
+
+<video class="video-bg" autoplay muted loop playsinline>
+    <source src="video1.mp4">
+</video>
+
+<div class="heart-bg"></div>
+<div class="overlay"></div>
+
+<audio id="music" loop>
+    <source src="music.mp3">
+</audio>
+
+<div class="heart"></div>
+<img class="heart-img" src="love.jpg">
+
+<div id="extras"></div>
+<div class="text" id="text"></div>
+
+<div class="viewer" id="viewer"><img id="viewImg"></div>
+
+</div>
+
+<script>
+/* ===== UNLOCK ===== */
+function unlock(){
+    if(pass.value==="yeuem"){
+        lock.style.display="none";
+        main.style.display="block";
+        music.play().catch(()=>{});
+    }else err.style.display="block";
+}
+
+/* ===== EXTRA IMAGES (BAY CHẬM) ===== */
+const imgs=[...Array(10)].map((_,i)=>`extra${i+1}.jpg`);
+imgs.forEach(src=>{
+    const img=document.createElement("img");
+    img.src=src; img.className="extra";
+    let x=Math.random()*(innerWidth-100);
+    let y=Math.random()*(innerHeight-100);
+    let vx=(Math.random()*0.4+0.15)*(Math.random()<.5?-1:1);
+    let vy=(Math.random()*0.4+0.15)*(Math.random()<.5?-1:1);
+
+    img.onclick=()=>{viewer.style.display="flex";viewImg.src=src};
+
+    function move(){
+        x+=vx;y+=vy;
+        if(x<0||x>innerWidth-90)vx*=-1;
+        if(y<0||y>innerHeight-90)vy*=-1;
+        img.style.left=x+"px";
+        img.style.top=y+"px";
+        requestAnimationFrame(move);
+    }
+    move(); extras.appendChild(img);
+});
+viewer.onclick=()=>viewer.style.display="none";
+
+/* ===== MANY FLYING HEARTS ===== */
+setInterval(()=>{
+    for(let i=0;i<5;i++){
+        const h=document.createElement("div");
+        h.className="fly";
+        h.innerHTML=Math.random()>0.5?"❤️":"💖";
+        h.style.left=Math.random()*innerWidth+"px";
+        h.style.bottom="-40px";
+        h.style.fontSize=(14+Math.random()*30)+"px";
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(),7000);
+    }
+},120);
+
+/* ===== HEART EXPLOSION ===== */
+function explode(x,y){
+    for(let i=0;i<16;i++){
+        const e=document.createElement("div");
+        e.className="explode";
+        e.innerHTML=Math.random()>0.5?"❤️":"💖";
+        e.style.left=x+"px";
+        e.style.top=y+"px";
+        e.style.setProperty("--x",Math.random()*260-130);
+        e.style.setProperty("--y",Math.random()*260-130);
+        document.body.appendChild(e);
+        setTimeout(()=>e.remove(),1300);
+    }
+}
+document.addEventListener("click",e=>explode(e.clientX,e.clientY));
+setInterval(()=>{
+    if(Math.random()<0.35)
+        explode(Math.random()*innerWidth,Math.random()*innerHeight);
+},3000);
+
+/* ===== TEXT ===== */
+const texts=[
+ "❤️ Chúc em luôn hạnh phúc ❤️",
+ "💞 Yêu em rất nhiều 💞",
+ "🌹 Forever 🌹",
+ "💍 Love You 💍"
+];
+let t=0;
+setInterval(()=>text.innerHTML=texts[t++%texts.length],3500);
+</script>
+
+</body>
+</html>
